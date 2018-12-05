@@ -12,7 +12,7 @@ fun main(vararg args: String) {
 
 }
 
-private fun react(polymer: String): String {
+fun react(polymer: String): String {
     var result = polymer
 
     var i = 0
