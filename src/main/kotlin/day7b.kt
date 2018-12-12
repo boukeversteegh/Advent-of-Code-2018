@@ -12,25 +12,34 @@ data class Worker(val node: Node, var remainingTime: Int)
 
 fun main(vararg args: String) {
     File("inputs/07.txt").useLines { lines ->
-        val targets = mutableSetOf<Node>()
         val rules = mutableSetOf<Rule>()
         lines.forEach { line ->
             val rule = Regex("Step (.) must be finished before step (.) can begin\\.").find(line)
             if (rule != null) {
                 val (dependency, target) = rule.destructured
-
-                targets.add(target)
-                targets.add(dependency)
                 rules.add(Rule(dependency, target))
             }
         }
 
-        var steps = ""
-        var totalTime = 0
+        val solver = Solver(rules, 5)
+        solver.solve()
+        println(solver.steps)
+        println(solver.totalTime)
+    }
+}
 
-        val maxWorkers = 5
-        var workers = mutableListOf<Worker>()
 
+class Solver(private val rules: MutableSet<Rule>, private val maxWorkers: Int) {
+    private val targets = rules.flatMap { listOf(it.dependency, it.target) }.toMutableSet()
+    private val workers = mutableListOf<Worker>()
+
+    private var _steps = ""
+    private var _totalTime = 0
+
+    val steps get() = _steps
+    val totalTime get() = _totalTime
+
+    fun solve() {
         while (targets.isNotEmpty()) {
             for (node in targets.sorted()) {
                 val nodeDeps = rules.filter { node == it.target }
@@ -49,8 +58,8 @@ fun main(vararg args: String) {
             workers.sortBy { it.remainingTime }
             val completedWorker = workers.first()
 
-            totalTime += completedWorker.remainingTime
-            steps += completedWorker.node
+            _totalTime += completedWorker.remainingTime
+            _steps += completedWorker.node
 
             workers.remove(completedWorker)
             rules.removeIf { completedWorker.node == it.dependency }
@@ -61,10 +70,7 @@ fun main(vararg args: String) {
         }
 
         if (workers.isNotEmpty()) {
-            totalTime += workers.last().remainingTime
+            _totalTime += workers.last().remainingTime
         }
-
-        println(steps)
-        println(totalTime)
     }
 }
