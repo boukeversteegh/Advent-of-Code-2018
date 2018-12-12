@@ -39,7 +39,7 @@ fun main(vararg args: String) {
                     .map { it to it.distance(position) }
                     .sortedBy { it.second }
 
-                if (distances.get(0).second == distances.get(1).second) {
+                if (distances[0].second == distances.get(1).second) {
                     // no shortest distance, don't count area
                     continue
                 }
