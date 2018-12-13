@@ -1,8 +1,9 @@
+import util.IPosition
 import util.Position
 import java.io.File
 
 
-data class Point(var position: Position, var velocity: Position)
+data class Point(var position: IPosition, var velocity: IPosition)
 
 class Screen(val w: Int, val h: Int) {
     private val screen = BooleanArray(w * h)
