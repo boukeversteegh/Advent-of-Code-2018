@@ -4,10 +4,7 @@ import day13.Cart.Status.CRASHED
 import day13.Cart.Status.RUNNING
 import day13.Rotation.LEFT
 import day13.Rotation.RIGHT
-import util.IPosition
-import util.Position
-import util.getNext
-import util.getPrev
+import util.*
 
 sealed class Cell
 abstract class Track(private val position: IPosition, var cart: Cart? = null) : IPosition by position, Cell() {
@@ -103,6 +100,9 @@ enum class Direction(position: IPosition, val orientation: Orientation) : IPosit
         val order = listOf(UP, RIGHT, DOWN, LEFT)
     }
 }
+
+
+
 
 data class Cart(var position: IPosition, var direction: Direction) : IPosition {
     override fun distance(position: IPosition): Int {
@@ -220,8 +220,8 @@ class Circuit(lines: List<String>) {
     }
 
     fun nextTick() {
-        val mcarts = carts.sortedWith(compareBy({ it.y }, { it.x }))
-        mcarts.forEach(this::ride)
+        val sortedCarts = carts.sortedWith(compareBy({ it.y }, { it.x }))
+        sortedCarts.forEach(this::ride)
     }
 
     private fun ride(cart: Cart) {

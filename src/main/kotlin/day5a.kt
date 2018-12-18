@@ -5,8 +5,7 @@ fun main(vararg args: String) {
 
     File("inputs/05.txt").useLines {
         val polymer = it.first()
-        var result = react(polymer)
-
+        val result = react(polymer)
         println(result.length)
     }
 

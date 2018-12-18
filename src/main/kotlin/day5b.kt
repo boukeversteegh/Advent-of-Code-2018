@@ -5,7 +5,7 @@ fun main(vararg args: String) {
     File("inputs/05.txt").useLines { lines ->
         val polymer = lines.first()
 
-        val units = CharRange('a', 'z')
+        val units = 'a'..'z'
 
         val m = units
             .map { polymer.replace(it.toString(), "", ignoreCase = true) }

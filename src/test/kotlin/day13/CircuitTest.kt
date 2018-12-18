@@ -4,6 +4,7 @@ import day13.Direction.*
 import org.junit.Assert.assertEquals
 import org.junit.Ignore
 import org.junit.Test
+import util.IPosition
 import util.Position
 import util.p
 import java.io.File
@@ -270,6 +271,17 @@ class CircuitTest {
         assertEquals(input.joinToString("\n"), circuit.render())
     }
 
+    @Test
+    fun render2() {
+        val input = listOf(
+            "/<--\\",
+            "|   |",
+            "\\->-/"
+        )
+        val circuit = Circuit(input)
+        circuit.simulateTillCrash(1000)
+    }
+
     @Ignore
     @Test
     fun example() {
@@ -284,6 +296,21 @@ class CircuitTest {
             """.trimIndent().lines()
 
         Circuit(input).simulateTillCrash(500)
+    }
+
+    @Test
+    fun complex_example() {
+        val input =
+            """
+                /->-\
+                |   |  /----\
+                | /-+--+-\  |
+                | | |  | ^  |
+                \-+-/  \-+--/
+                  \------/
+            """.trimIndent().lines()
+
+        Circuit(input).simulateTillCrash(400)
     }
 
     @Ignore
