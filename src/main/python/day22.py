@@ -12,8 +12,8 @@ mouth = (0, 0)
 depth = 3198
 
 # example
-target = 10, 10
-depth = 510
+# target = 10, 10
+# depth = 510
 
 GI = {}
 EL = {}
@@ -114,14 +114,13 @@ class Node:
 
 cnode = None
 nodes = [
-    Node(mouth[0], mouth[1], torch, 0)
+    (0, Node(mouth[0], mouth[1], torch, 0))
 ]
 
 visited_nodes = set()
 
 
 def expand(n):
-    global nodes
     x, y, t, c = n.tuple()
 
     children = [
@@ -136,11 +135,7 @@ def expand(n):
     new_children = [cn for cn in children if (cn.x, cn.y, cn.t) not in visited_nodes]
 
     for child in new_children:
-        nodes.insert(0, child)
-    # print len(nodes),'-',
-    #
-    # print '-', len(nodes)
-
+        heapq.heappush(nodes, (child.f, child))
 
 def show():
     for y in xrange(mouth[1], target[1] + 1):
@@ -159,12 +154,9 @@ def show():
 
 show()
 
-while len(nodes):
-    T = min(len(nodes), 100)
-    # nodes = sorted(nodes[:T], key=lambda _n: _n.f) + nodes[T:]
+while nodes:
+    f, n = heapq.heappop(nodes)
 
-    nodes.sort(key=lambda _n: _n.f)
-    n = nodes[0]
     cnode = n
 
     visited_nodes.add((n.x, n.y, n.t))
@@ -180,9 +172,3 @@ while len(nodes):
         rtime = end - t0
         print "\r#%s" % len(visited_nodes), (n.x, n.y, n.c, n.h), ('t=%d' % rtime), ('c/t=%02f' % (n.c / rtime)),
         expand(n)
-
-    nodes.remove(n)
-
-    # break
-    # for node in nodes:
-    #     print node.tuple()
