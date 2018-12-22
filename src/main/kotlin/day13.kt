@@ -82,7 +82,8 @@ enum class Orientation {
     VERTICAL
 }
 
-enum class Direction(position: IPosition, val orientation: Orientation) : IPosition by position {
+enum class Direction(val position: Position, val orientation: Orientation)
+{
     UP(Position(0, -1), Orientation.VERTICAL),
     DOWN(Position(0, 1), Orientation.VERTICAL),
     LEFT(Position(-1, 0), Orientation.HORIZONTAL),
@@ -102,19 +103,9 @@ enum class Direction(position: IPosition, val orientation: Orientation) : IPosit
 }
 
 
-
-
-data class Cart(var position: IPosition, var direction: Direction) : IPosition {
-    override fun distance(position: IPosition): Int {
-        return this.position.distance(position)
-    }
-
-    override fun plus(position: IPosition): IPosition {
-        return this.position + position
-    }
-
-    override val x: Int get() = position.x
-    override val y: Int get() = position.y
+data class Cart(var position: IPosition, var direction: Direction) {
+    val x: Int get() = position.x
+    val y: Int get() = position.y
 
     private var intersectionSequenceStep = 0
     var status: Status = Status.RUNNING
@@ -125,7 +116,7 @@ data class Cart(var position: IPosition, var direction: Direction) : IPosition {
     }
 
     fun ride() {
-        position += direction
+        position += direction.position
     }
 
     fun turn(rotation: Rotation) {
