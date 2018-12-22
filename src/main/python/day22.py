@@ -137,6 +137,7 @@ def expand(n):
     for child in new_children:
         heapq.heappush(nodes, (child.f, child))
 
+
 def show():
     for y in xrange(mouth[1], target[1] + 1):
         for x in xrange(mouth[0], target[0] + 1):
@@ -154,6 +155,7 @@ def show():
 
 show()
 
+i = 0
 while nodes:
     f, n = heapq.heappop(nodes)
 
@@ -168,7 +170,12 @@ while nodes:
         break
 
     if n.is_valid():
+        expand(n)
+
+    if i % 100 == 0:
         end = timer()
         rtime = end - t0
         print "\r#%s" % len(visited_nodes), (n.x, n.y, n.c, n.h), ('t=%d' % rtime), ('c/t=%02f' % (n.c / rtime)),
-        expand(n)
+    i += 1
+
+# answer: 1043
