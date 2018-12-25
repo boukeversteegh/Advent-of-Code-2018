@@ -12,19 +12,38 @@ class Stream:
         self.y = y
 
 
-streams = set([Stream(500, 0, '+')])
+streams = set()
 
-for line in file('../../../inputs/17.txt'):
-    minX, maxX = re.search(r'x=(\d+)(?=\.\.(\d+))?', line.strip()).groups()
-    minY, maxY = re.search(r'y=(\d+)(?=\.\.(\d+))?', line.strip()).groups()
 
-    minX, minY = int(minX), int(minY)
-    maxX, maxY = (int(maxX) if maxX is not None else minX), \
-                 (int(maxY) if maxY is not None else minY)
+def load_file_coordinates(file_name):
+    for line in file(file_name):
+        minX, maxX = re.search(r'x=(\d+)(?=\.\.(\d+))?', line.strip()).groups()
+        minY, maxY = re.search(r'y=(\d+)(?=\.\.(\d+))?', line.strip()).groups()
 
-    for y in xrange(minY, maxY + 1):
-        for x in xrange(minX, maxX + 1):
-            grid[y][x] = '#'
+        minX, minY = int(minX), int(minY)
+        maxX, maxY = (int(maxX) if maxX is not None else minX), \
+                     (int(maxY) if maxY is not None else minY)
+
+        for y in xrange(minY, maxY + 1):
+            for x in xrange(minX, maxX + 1):
+                grid[y][x] = '#'
+    streams.add(Stream(500, 0, '+'))
+
+
+def load_file_ascii(file_name):
+    y = 0
+    for line in file(file_name):
+        x = 0
+        for c in line:
+            if c in ['#', '.', ' ']:
+                grid[y][x] = '#' if c == '#' else '.'
+            if c == '+':
+                streams.add(Stream(x, y, '+'))
+            x += 1
+        y += 1
+
+
+load_file_ascii('../../../inputs/17ascii.txt')
 
 minY = min(grid.keys())
 maxY = max(grid.keys())
@@ -32,8 +51,16 @@ maxX = max([max(row.keys()) for row in grid.values()])
 minX = min([min(row.keys()) for row in grid.values()])
 
 blue = u'\u001b[34;1m'
+bg_blue = u'\u001b[44;1m'
 red = u'\u001b[32;1m'
+cyan = u'\u001b[34;1m'
 reset = '\033[0m'
+
+water = u'\u001b[34;44;1m'
+flow = u'\u001b[36;46;1m'
+stream = u'\u001b[37m'
+sand = u'\u001b[38;5;131m'
+clay = u'\u001b[48;5;59;1m\u001b[38;5;59m'
 
 
 def print_color(d, clr):
@@ -58,19 +85,24 @@ def show():
     for y in xrange(0, vMaxY + 1):
         print_color(str(y).rjust(5, ' '), red)
         for x in xrange(minX - 1, maxX + 1):
-            # if (x, y) in smap:
-            #    print_color(smap[(x, y)].d, red)
-            # else:
-            c = get(x, y)
-            if c in ['#', '.']:
-                sys.stdout.write(c)
+            if (x, y) in smap:
+                print_color(smap[(x, y)].d, stream)
             else:
-                print_color(c, blue)
+                c = get(x, y)
+                if c is '#':
+                    print_color(c, clay)
+                elif c is '.':
+                    print_color(' ', sand)
+                elif c is '|':
+                    print_color(c, flow)
+                elif c is '~':
+                    print_color(c, water)
         print
-    print 'streams=', len(smap), 'water=', countWater(), 'still water=', countWater(['~']), 'vMaxY/maxY=', vMaxY, maxY, 'minY-maxY', minY, maxY
+    print 'streams=', len(smap), 'water=', countWater(), 'still water=', countWater(
+        ['~']), 'vMaxY/maxY=', vMaxY, maxY, 'minY-maxY', minY, maxY
 
 
-def countWater(types = ['|', '~']):
+def countWater(types=['|', '~']):
     count = 0
     for y, row in grid.items():
         for x, c in row.items():
