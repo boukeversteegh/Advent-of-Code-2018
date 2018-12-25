@@ -76,8 +76,12 @@ def show():
     smap = {}
     for s in streams:
         smap[(s.x, s.y)] = s
-    vMinY = min(min([s.y for s in smap.values()]) - 10, last_vMinY)
-    vMaxY = max([s.y for s in smap.values()]) + 10
+    if streams:
+        vMinY = min(min([s.y for s in smap.values()]) - 10, last_vMinY)
+        vMaxY = max([s.y for s in smap.values()]) + 10
+    else:
+        vMinY = minY
+        vMaxY = maxY
 
     last_vMinY = vMinY
     last_vMaxY = vMaxY
@@ -95,14 +99,14 @@ def show():
                     print_color(' ', sand)
                 elif c is '|':
                     print_color(c, flow)
-                elif c is '~':
+                else:
                     print_color(c, water)
         print
-    print 'streams=', len(smap), 'water=', countWater(), 'still water=', countWater(
+    print 'streams=', len(smap), 'water=', count_water(), 'still water=', count_water(
         ['~']), 'vMaxY/maxY=', vMaxY, maxY, 'minY-maxY', minY, maxY
 
 
-def countWater(types=['|', '~']):
+def count_water(types=['|', '~']):
     count = 0
     for y, row in grid.items():
         for x, c in row.items():
@@ -151,19 +155,17 @@ def run():
             continue
 
         if below in ['#', '~']:
-            # debug("hitting ground or standing water")
             lx, rx = x, x
             while get(lx, y + 1) in ['~', '#'] and get(lx, y) in ['.', '|', '~']:
-                # debug("find left side: %s" % lx)
                 lx -= 1
             while get(rx, y + 1) in ['~', '#'] and get(rx, y) in ['.', '|', '~']:
-                # debug("find right side: %s" % rx)
                 rx += 1
 
             edges = (get(lx, y), get(rx, y))
             surface = '~' if edges == ('#', '#') else '|'
             for _x in xrange(lx + 1, rx):
-                # debug("render surface")
+                if grid[y - 1].get(_x, None) == '|':
+                    streams.add(Stream(_x, y - 1, '|'))
                 grid[y][_x] = surface
 
             if edges[1] != '#':
@@ -171,13 +173,10 @@ def run():
             if edges[0] != '#':
                 nstreams.append(Stream(lx, y, '|'))
 
-            if surface is '|':
-                # debug("remove stream creating surface")
-                streams.remove(s)
-                # streams = [_s for _s in streams if _s != s]
-                # debug("done")
+            # if surface is '|':
+            streams.remove(s)
 
-            s.y -= 1
+            # s.y -= 1
 
         _y = y
         while get(x, _y + 1) == '.' and _y < maxY:
